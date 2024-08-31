@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.loader import Integration
 
+from .device import KNXInterfaceDevice
 
 type KnxEtsConfigEntry = ConfigEntry[KnxEtsData]
 
@@ -18,3 +19,4 @@ class KnxEtsData:
     """Data for the KnxEts integration."""
 
     integration: Integration
+    device: KNXInterfaceDevice
