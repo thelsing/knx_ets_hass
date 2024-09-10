@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import voluptuous as vol
-from homeassistant import config_entries, data_entry_flow
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.helpers import selector
 
-from .const import DOMAIN, LOGGER
+from homeassistant import config_entries, data_entry_flow
+
+from .const import DOMAIN
 
 
 class KnxEtsFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):

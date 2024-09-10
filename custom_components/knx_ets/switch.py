@@ -2,26 +2,26 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-from homeassistant.const import (
-    EntityCategory,
-)
-from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
-import knx
 import asyncio
+from typing import TYPE_CHECKING, Any
+
+import knx
+
+from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.const import EntityCategory
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-    from .data import KnxEtsConfigEntry
-    from .device import KNXInterfaceDevice
+    from .module import KnxEtsConfigEntry, KnxModule
 
 ENTITY_DESCRIPTIONS = (
     SwitchEntityDescription(
         key="program_mode",
         name="Enable Program Mode",
-        entity_category = EntityCategory.CONFIG,
+        icon = "mdi:cog-sync",
+        entity_category=EntityCategory.CONFIG,
     ),
 )
 
@@ -33,12 +33,8 @@ async def async_setup_entry(
 ) -> None:
     """Set up the switch platform."""
 
-    device: KNXInterfaceDevice = entry.runtime_data.device
-
     async_add_entities(
-        KnxEtsSwitch(
-            entity_description=entity_description, knx_device=device
-        )
+        KnxEtsSwitch(entity_description=entity_description, config_entry=entry)
         for entity_description in ENTITY_DESCRIPTIONS
     )
 
@@ -47,13 +43,13 @@ class KnxEtsSwitch(SwitchEntity):
     """knx_ets switch class."""
 
     def __init__(
-        self,
-        entity_description: SwitchEntityDescription, knx_device: KNXInterfaceDevice
+        self, entity_description: SwitchEntityDescription, config_entry: KnxEtsConfigEntry
     ) -> None:
         """Initialize the switch class."""
         super().__init__()
         self.entity_description = entity_description
-        self._attr_device_info = knx_device.device_info
+        self._attr_device_info = config_entry.runtime_data.device.device_info
+        self._attr_unique_id = f"_{config_entry.entry_id}_{entity_description.key}"
 
     @property
     def is_on(self) -> bool:
